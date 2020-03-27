@@ -1,18 +1,14 @@
 package ru.spbstu.icc;
 
-import javax.imageio.IIOException;
 import java.io.*;
-import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 public class Cutter {
-    private final String inputFile;
-    private final int startOfRange;
-    private final int endOfRange;
+    private int startOfRange;
+    private int endOfRange;
 
-    public Cutter(String in, int startOfRange, int endOfRange) {
-        this.inputFile = in;
+    public Cutter(int startOfRange, int endOfRange) {
         this.startOfRange = startOfRange;
         this.endOfRange = endOfRange;
     }
@@ -23,7 +19,7 @@ public class Cutter {
 
         StringBuilder result = new StringBuilder();
         int x = Math.min(endOfRange, words.length);
-        for (int i = startOfRange; i < x; i++){
+        for (int i = startOfRange; i <= x; i++){
             result.append(words[i]).append(" ");
         }
         int y = result.length();
@@ -34,14 +30,14 @@ public class Cutter {
     private String changeLineC(String line){
         StringBuilder result = new StringBuilder();
         int x = Math.min(endOfRange, line.length());
-        for (int i = startOfRange; i < x; i++){
+        for (int i = startOfRange; i <= x; i++){
             result.append(line.charAt(i));
         }
         return result.toString();
     }
 
-    public String cut(boolean flag) throws IOException {
-        try (FileReader in = new FileReader(inputFile);
+    public String cut(boolean flag, File input) throws IOException {
+        try (FileReader in = new FileReader(input);
         BufferedReader reader = new BufferedReader(in)) {
             StringBuilder result = new StringBuilder();
             String line = reader.readLine();
@@ -55,5 +51,17 @@ public class Cutter {
             }
             return result.toString();
         }
+    }
+
+    public String cut(boolean flag, List<String> input) {
+            StringBuilder result = new StringBuilder();
+            boolean firstLine = true;
+            for (String line:input) {
+                String changedLine = flag ? changeLineW(line) : changeLineC(line);
+                if (!firstLine) result.append(System.lineSeparator());
+                result.append(changedLine);
+                firstLine = false;
+            }
+            return result.toString();
     }
 }

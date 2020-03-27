@@ -6,6 +6,9 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,18 +20,20 @@ public class CutUtility {
     @Option(name = "-w", metaVar = "WordsIndent", usage = "Indentation in words", forbids = {"-c"})
     private boolean wordsIndent;
 
-    @Option(name = "-o", metaVar = "OutputName", usage = "Output file name")
-    private String outputFileName;
+    @Option(name = "-o", metaVar = "Output", usage = "Output file name")
+    private File out;
 
-    @Argument(metaVar = "InputName", usage = "Input file name")
-    private String inputFileName;
-
-    @Argument(required = true, metaVar = "Range", index = 1, usage = "Output range (number-number)")
+    @Argument(required = true, metaVar = "Range", usage = "Output range (number-number)")
     private String range;
+
+    @Argument(metaVar = "Input", index = 1, usage = "Input file name")
+    private File input;
+
 
     public static void main(String[] args){
         new CutUtility().doMain(args);
     }
+
 
     int startOfRange = 0;
     int endOfRange = 0;
@@ -53,28 +58,50 @@ public class CutUtility {
     private void doMain(String[] args){
         CmdLineParser parser = new CmdLineParser(this);
 
+
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println("Command line: cut [-c|-w] [-o ofile] [file] range");
+            System.err.println("Command line: cut [-c|-w] [-o ofile] range [file]");
             parser.printUsage(System.err);
             return;
         }
 
         if (!checkRange(range)) return;
+        Cutter cutter = new Cutter(startOfRange, endOfRange);
 
-        Cutter cutter = new Cutter(inputFileName, startOfRange, endOfRange);
+
         try {
-            String res = cutter.cut(wordsIndent);
-            if (outputFileName == null) {
+            String res;
+            if (input == null) {
+                Scanner scan = new Scanner(System.in);
+                System.out.println("No input file name. Enter the data. Use /stop - to stop entering.");
+
+                List<String> inputLines = new ArrayList<>();
+                String inputString = "";
+                while (!inputString.equals("/stop")) {
+                    inputString = scan.nextLine();
+                    inputLines.add(inputString);
+                }
+                inputLines.remove(inputLines.size() - 1);
+
+                res = cutter.cut(wordsIndent, inputLines);
+            } else {
+                res = cutter.cut(wordsIndent, input);
+            }
+
+
+            if (out == null) {
                 System.out.println(res);
             } else {
-                try (FileWriter out = new FileWriter(outputFileName);
-                     BufferedWriter writer = new BufferedWriter(out)) {
+                try (FileWriter output = new FileWriter(out);
+                     BufferedWriter writer = new BufferedWriter(output)) {
                     writer.write(res);
                 }
             }
+
+
             System.out.println("It's done");
         } catch (IOException e) {
             System.err.println(e.getMessage());
