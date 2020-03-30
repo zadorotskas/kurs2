@@ -18,7 +18,7 @@ public class Cutter {
         String[] words = pattern.split(line);
 
         StringBuilder result = new StringBuilder();
-        int x = Math.min(endOfRange, words.length);
+        int x = Math.min(endOfRange, words.length - 1);
         for (int i = startOfRange; i <= x; i++){
             result.append(words[i]).append(" ");
         }
@@ -29,7 +29,7 @@ public class Cutter {
 
     private String changeLineC(String line){
         StringBuilder result = new StringBuilder();
-        int x = Math.min(endOfRange, line.length());
+        int x = Math.min(endOfRange, line.length() - 1);
         for (int i = startOfRange; i <= x; i++){
             result.append(line.charAt(i));
         }

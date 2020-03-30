@@ -47,7 +47,7 @@ public class CutUtility {
         Pattern pattern2 = Pattern.compile("-");
         String[] ranges = pattern2.split(range);
         startOfRange = ranges[0].length() > 0 ? Integer.parseInt(ranges[0]) : 0;
-        endOfRange = ranges[1].length() > 0 ? Integer.parseInt(ranges[1]) : Integer.MAX_VALUE;
+        endOfRange = ranges.length > 1 ? Integer.parseInt(ranges[1]) : Integer.MAX_VALUE;
         if (endOfRange < startOfRange) {
             System.err.println("Incorrect range. End of range should be more than start of range.");
             return false;
@@ -68,6 +68,10 @@ public class CutUtility {
             return;
         }
 
+        if (!(charsIndent || wordsIndent)) {
+            System.err.println("Not used the \"-w\" or \"-c\" option.");
+            return;
+        }
         if (!checkRange(range)) return;
         Cutter cutter = new Cutter(startOfRange, endOfRange);
 

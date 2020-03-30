@@ -18,14 +18,14 @@ class CutUtilityTest {
 
     @Test
     public void cutWithFiles() throws IOException{
-        CutUtility.main(new String[]{"-w", "-o", outputFile, "2-4", inputFile});
+        CutUtility.main(new String[]{"-w", "-o", outputFile, "2-3", inputFile});
         BufferedReader reader = new BufferedReader(new FileReader(outputFile));
         String line = reader.readLine();
-        assertEquals( "обрабатывает входные данные", line);
+        assertEquals( "обрабатывает входные", line);
         line = reader.readLine();
-        assertEquals("каждой строки выдаёт", line);
+        assertEquals("каждой строки", line);
         line = reader.readLine();
-        assertEquals("строки согласно занадному", line);
+        assertEquals("строки согласно", line);
     }
 
 
@@ -44,12 +44,14 @@ class CutUtilityTest {
                 "It's done" + ls, out.toString());
     }
 
+
     @Test
     public void cutRangeError1(){
         System.setErr(output);
         CutUtility.main(new String[]{"-w", "100-1"});
         assertEquals("Incorrect range. End of range should be more than start of range." + ls, out.toString());
     }
+
 
     @Test
     public void cutRangeError2(){
@@ -58,8 +60,25 @@ class CutUtilityTest {
         assertEquals("Incorrect range. Use int-int, int- or -int." + ls, out.toString());
     }
 
+
     @Test
-    public void cutCLError(){
+    public void cutRangeError3(){
+        System.setErr(output);
+        CutUtility.main(new String[]{"-w", "one-3"});
+        assertEquals("Incorrect range. Use int-int, int- or -int." + ls, out.toString());
+    }
+
+
+    @Test
+    public void cutRangeError4(){
+        System.setErr(output);
+        CutUtility.main(new String[]{"-w", "one1-ten"});
+        assertEquals("Incorrect range. Use int-int, int- or -int." + ls, out.toString());
+    }
+
+
+    @Test
+    public void cutCLError1(){
         System.setErr(output);
         CutUtility.main(new String[]{});
         assertEquals("Argument \"Range\" is required" + ls +
@@ -69,5 +88,40 @@ class CutUtilityTest {
                 " -c CharsIndent : Indentation in chars (default: false)" + ls +
                 " -o Output      : Output file name" + ls +
                 " -w WordsIndent : Indentation in words (default: false)" + ls, out.toString());
+    }
+
+
+    @Test
+    public void cutCLError2(){
+        System.setErr(output);
+        CutUtility.main(new String[]{"3-22"});
+        assertEquals("Not used the \"-w\" or \"-c\" option." + ls, out.toString());
+    }
+
+
+    @Test
+    public void cutCLError3(){
+        System.setErr(output);
+        CutUtility.main(new String[]{"-c", "-w", "2-20"});
+        assertEquals("option \"-w\" cannot be used with the option(s) [-c]" + ls +
+                "Command line: cut [-c|-w] [-o ofile] range [file]" + ls +
+                " Range          : Output range (number-number)" + ls +
+                " Input          : Input file name" + ls +
+                " -c CharsIndent : Indentation in chars (default: true)" + ls +
+                " -o Output      : Output file name" + ls +
+                " -w WordsIndent : Indentation in words (default: true)" + ls, out.toString());
+    }
+
+
+    @Test
+    public void cutNoEndOfRange() throws IOException{
+        CutUtility.main(new String[]{"-w", "-o", outputFile, "2-", inputFile});
+        BufferedReader reader = new BufferedReader(new FileReader(outputFile));
+        String line = reader.readLine();
+        assertEquals( "обрабатывает входные данные", line);
+        line = reader.readLine();
+        assertEquals("каждой строки выдаёт", line);
+        line = reader.readLine();
+        assertEquals("строки согласно занадному диапазону", line);
     }
 }
