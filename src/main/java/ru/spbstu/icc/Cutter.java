@@ -3,6 +3,7 @@ package ru.spbstu.icc;
 import java.io.*;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Cutter {
     private int startOfRange;
@@ -36,32 +37,23 @@ public class Cutter {
         return result.toString();
     }
 
-    public String cut(boolean flag, File input) throws IOException {
-        try (FileReader in = new FileReader(input);
-        BufferedReader reader = new BufferedReader(in)) {
-            StringBuilder result = new StringBuilder();
-            String line = reader.readLine();
-            boolean firstLine = true;
-            while (line != null) {
-                String changedLine = flag ? changeLineW(line) : changeLineC(line);
-                if (!firstLine) result.append(System.lineSeparator());
-                result.append(changedLine);
-                line = reader.readLine();
-                firstLine = false;
-            }
-            return result.toString();
+    public String cut(boolean flag, List<String> input) {
+        StringBuilder result = new StringBuilder();
+        boolean firstLine = true;
+        for (String line:input) {
+            String changedLine = flag ? changeLineW(line) : changeLineC(line);
+            if (!firstLine) result.append(System.lineSeparator());
+            result.append(changedLine);
+            firstLine = false;
         }
+        return result.toString();
     }
 
-    public String cut(boolean flag, List<String> input) {
-            StringBuilder result = new StringBuilder();
-            boolean firstLine = true;
-            for (String line:input) {
-                String changedLine = flag ? changeLineW(line) : changeLineC(line);
-                if (!firstLine) result.append(System.lineSeparator());
-                result.append(changedLine);
-                firstLine = false;
-            }
-            return result.toString();
+    public String cut(boolean flag, File input) throws IOException {
+        try (FileReader in = new FileReader(input);
+             BufferedReader reader = new BufferedReader(in)) {
+             List<String> list = reader.lines().collect(Collectors.toList());
+             return cut(flag, list);
+        }
     }
 }

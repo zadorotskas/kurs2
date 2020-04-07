@@ -23,7 +23,7 @@ public class CutUtility {
     @Option(name = "-o", metaVar = "Output", usage = "Output file name")
     private File out;
 
-    @Argument(required = true, metaVar = "Range", usage = "Output range (number-number)")
+    @Argument(required = true, metaVar = "Range", usage = "Output range (number_number)")
     private String range;
 
     @Argument(metaVar = "Input", index = 1, usage = "Input file name")
@@ -34,17 +34,16 @@ public class CutUtility {
         new CutUtility().doMain(args);
     }
 
-
-    int startOfRange = 0;
-    int endOfRange = 0;
+    private int startOfRange = 0;
+    private int endOfRange = 0;
     private boolean checkRange(String range) {
-        Pattern pattern1 = Pattern.compile("^(\\d*-\\d*)$");
+        Pattern pattern1 = Pattern.compile("^(\\d*_\\d*)$");
         Matcher matcher = pattern1.matcher(range);
         if (!matcher.find()) {
-            System.err.println("Incorrect range. Use int-int, int- or -int.");
+            System.err.println("Incorrect range. Use int_int, int_ or _int.");
             return false;
         }
-        Pattern pattern2 = Pattern.compile("-");
+        Pattern pattern2 = Pattern.compile("_");
         String[] ranges = pattern2.split(range);
         startOfRange = ranges[0].length() > 0 ? Integer.parseInt(ranges[0]) : 0;
         endOfRange = ranges.length > 1 ? Integer.parseInt(ranges[1]) : Integer.MAX_VALUE;
