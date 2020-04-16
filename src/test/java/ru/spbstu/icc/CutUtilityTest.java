@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CutUtilityTest {
     private String ls = System.lineSeparator();
-    private Path inputFile =  Paths.get("src/main/resources/file1.txt");
-    private Path outputFile =  Paths.get("src/main/resources/file2.txt");
+    private Path inputFile =  Paths.get("src","test", "resources", "file1.txt");
+    private Path outputFile =  Paths.get("src","test", "resources", "file2.txt");
     private ByteArrayOutputStream out = new ByteArrayOutputStream();
     private PrintStream output = new PrintStream(out);
 
@@ -44,6 +44,8 @@ class CutUtilityTest {
                 "стируем ввод данных" + ls +
                 "также вывод данных " + ls +
                 "It's done" + ls, out.toString());
+        System.setOut(System.out);
+        System.setIn(System.in);
     }
 
 
@@ -52,6 +54,7 @@ class CutUtilityTest {
         System.setErr(output);
         CutUtility.main(new String[]{"-w", "100_1"});
         assertEquals("Incorrect range. End of range should be more than start of range." + ls, out.toString());
+        System.setErr(System.err);
     }
 
 
@@ -60,6 +63,7 @@ class CutUtilityTest {
         System.setErr(output);
         CutUtility.main(new String[]{"-w", "oneTwoThree"});
         assertEquals("Incorrect range. Use int_int, int_ or _int." + ls, out.toString());
+        System.setErr(System.err);
     }
 
 
@@ -68,6 +72,7 @@ class CutUtilityTest {
         System.setErr(output);
         CutUtility.main(new String[]{"-w", "one_3"});
         assertEquals("Incorrect range. Use int_int, int_ or _int." + ls, out.toString());
+        System.setErr(System.err);
     }
 
 
@@ -76,6 +81,7 @@ class CutUtilityTest {
         System.setErr(output);
         CutUtility.main(new String[]{"-w", "one1_ten"});
         assertEquals("Incorrect range. Use int_int, int_ or _int." + ls, out.toString());
+        System.setErr(System.err);
     }
 
 
